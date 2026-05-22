@@ -6,7 +6,7 @@
 |---|---|
 | **Genre** | Co-op Horror Extraction (Phasmophobia / Lethal Company / REPO lane) |
 | **Platforms** | PC (Steam) primary |
-| **Engine** | Unity 2022.3 LTS + URP + Photon PUN 2 |
+| **Engine** | Unity **6 LTS (6000.4.4f1)** + URP + Photon PUN 2 |
 | **Target frame-rate** | 60 fps on RTX 2060 |
 | **Mission 1 scope** | 'The Pilkin Manor' — first haunted house, 1 monster, $1500 quota |
 | **Designed for** | 6 missions (different haunted locations) |
@@ -27,7 +27,7 @@ Details in `docs/01_IDEATION_AND_TRENDS.md`.
 ## Quick start
 
 1. Read `docs/07_UNITY_SETUP_GUIDE.md`.
-2. Unity 2022.3 LTS URP project; copy `Assets/_Project/`.
+2. Unity **6 LTS (6000.4.4f1)** URP project; copy `Assets/_Project/`.
 3. Import: **Horror Multiplayer Game Template** (Photon PUN 2 backbone), Urban Abandoned District, Stylized Dungeons, Fantasy Monsters Bundle (re-skinned ghosts), Horror Bundle SFX, Volumetric Blood Fluids, Screenspace VFX, Lumen FX 2, Eyes Animator, Heat UI, Cutscene Engine, City Characters — all already in your inventory.
 4. Open `Scenes/Bootstrap.unity`.
 
@@ -41,5 +41,6 @@ Details in `docs/01_IDEATION_AND_TRENDS.md`.
 | GDD v1.0 approved | ✅ |
 | Architecture & scripts | ✅ |
 | v0.2 — runtime LLM removed, Director uses LineBanks | ✅ |
+| v0.2.1 — Unity 6 LTS (6000.4.4f1) target | ✅ |
 | Mission 1 vertical slice authored | ⏳ requires asset import |
 | Missions 2–6 outlined | ✅ data-driven |
