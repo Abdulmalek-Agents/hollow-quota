@@ -1,4 +1,6 @@
 using UnityEngine;
+using InventixGames.Core.Dialogue;
+
 namespace InventixGames.Core
 {
     [DefaultExecutionOrder(-10000)]
@@ -15,7 +17,7 @@ namespace InventixGames.Core
             ServiceLocator.Register<IAudioService>(gameObject.AddComponent<AudioService>());
             ServiceLocator.Register<Mission.IMissionService>(gameObject.AddComponent<Mission.MissionManager>());
             ServiceLocator.Register<ICheckpointService>(gameObject.AddComponent<CheckpointService>());
-            ServiceLocator.Register<IAICopilotService>(gameObject.AddComponent<ClaudeCopilotService>());
+            ServiceLocator.Register<IScriptedDialogueService>(gameObject.AddComponent<ScriptedDialogueService>());
         }
         private void Start() => SceneLoader.LoadSceneAsync(firstSceneToLoad);
     }

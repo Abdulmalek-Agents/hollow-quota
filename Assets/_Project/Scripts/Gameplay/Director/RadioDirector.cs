@@ -1,41 +1,53 @@
 using System.Collections;
 using UnityEngine;
-using InventixGames.Core;
+using InventixGames.Core.Dialogue;
+
 namespace HollowQuota.Director
 {
     /// <summary>
-    /// Master-client only. Every 60–90s, builds an event context and asks Claude for a 1–2 sentence Director line.
-    /// Broadcasts to all clients via Photon RPC (extension point left for Photon).
+    /// Master-client only. Picks Director lines from event-appropriate LineBankSO pools
+    /// and broadcasts to all clients via Photon RPC (extension point left intact).
+    /// v0.2: 100% hand-authored lines — see /Assets/_Project/Data/LineBanks/.
     /// </summary>
     public class RadioDirector : MonoBehaviour
     {
-        [SerializeField] private AICopilotPersonaSO directorPersona;
-        [SerializeField] private float intervalMin = 60f, intervalMax = 90f;
-        [SerializeField] private bool isMasterClient = true; // set by Photon launcher in real build
-        private IAICopilotService _ai;
+        [Header("Line banks (author 20–40 lines each)")]
+        [SerializeField] private LineBankSO idleBank;       // generic mocking lines
+        [SerializeField] private LineBankSO downedBank;     // a Reclaimer goes down
+        [SerializeField] private LineBankSO bigLootBank;    // expensive object collected
+        [SerializeField] private LineBankSO quotaHitBank;   // quota reached
+        [SerializeField] private LineBankSO huddleBank;     // crew clumps too long
 
-        private void Start()
-        {
-            _ai = ServiceLocator.Get<IAICopilotService>();
-            if (isMasterClient) StartCoroutine(Loop());
-        }
-        private IEnumerator Loop()
+        [Header("Cadence")]
+        [SerializeField] private float intervalMin = 60f, intervalMax = 90f;
+        [SerializeField] private bool isMasterClient = true; // set by Photon launcher
+
+        [Header("Audio (optional)")]
+        [SerializeField] private AudioSource radioSource;
+
+        private void Start() { if (isMasterClient) StartCoroutine(IdleLoop()); }
+
+        private IEnumerator IdleLoop()
         {
             while (true)
             {
                 yield return new WaitForSeconds(Random.Range(intervalMin, intervalMax));
-                string ctx = BuildContext();
-                _ai.Ask(directorPersona.systemPrompt, ctx, OnLineReceived);
+                FireLine(idleBank);
             }
         }
-        protected virtual string BuildContext()
+
+        public void OnPlayerDowned(string playerName) => FireLine(downedBank, playerName);
+        public void OnBigLootGrabbed() => FireLine(bigLootBank);
+        public void OnQuotaHit() => FireLine(quotaHitBank);
+        public void OnCrewHuddled() => FireLine(huddleBank);
+
+        protected virtual void FireLine(LineBankSO bank, string subject = null)
         {
-            // Override / inject runtime state here (player names, quota, monster proximity, etc.)
-            return "Provide a single short, dryly-corporate radio comment for the Reclaimers.";
-        }
-        protected virtual void OnLineReceived(string line)
-        {
-            // In Photon build: BroadcastRpc to RadioOverlay UI on all clients.
+            if (bank == null) return;
+            string line = bank.PickRandom(out var clip);
+            if (!string.IsNullOrEmpty(subject)) line = line.Replace("{name}", subject);
+            if (radioSource && clip) { radioSource.clip = clip; radioSource.Play(); }
+            // In Photon build: BroadcastRpc(line, clipName) so every client renders the same Director line.
             Debug.Log($"[Director] {line}");
         }
     }
